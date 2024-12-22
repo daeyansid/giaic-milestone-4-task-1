@@ -9,7 +9,8 @@ interface Comment {
 }
 
 export default function Post() {
-    const { slug } = useParams();
+    const params = useParams();
+    const slug = typeof params?.slug === 'string' ? params.slug : '';
     const router = useRouter();
 
     const [comments, setComments] = useState<Comment[]>([]);
@@ -49,7 +50,7 @@ export default function Post() {
                 {/* Hero Section */}
                 <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
                     <h1 className="text-4xl font-extrabold text-gray-900 mb-4">
-                        {slug.toString().replace(/-/g, ' ')}
+                        {slug.replace(/-/g, ' ')}
                     </h1>
                     <div className="flex items-center mb-6">
                         <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center">
