@@ -2,6 +2,7 @@
 
 import Navbar from "../components/Navbar";
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface Post {
     id: number;
@@ -11,16 +12,17 @@ interface Post {
 
 async function fetchPosts(): Promise<Post[]> {
     const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
-        cache: 'force-cache', // Ensures static fetching
+        cache: 'force-cache',
     });
     const posts: Post[] = await response.json();
-    return posts.slice(0, 10); // Fetch the first 10 posts
+    return posts.slice(0, 5); // Fetch the first 5 posts only
 }
 
 export default function Home() {
     const [posts, setPosts] = useState<Post[]>([]);
     const [loading, setLoading] = useState(true);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const router = useRouter();
 
     useEffect(() => {
         // Check authentication status
@@ -43,22 +45,46 @@ export default function Home() {
     }, []);
 
     return (
-        <div className="p-6 max-w-5xl mx-auto">
+        <div className="bg-gray-50 min-h-screen">
             <Navbar />
-            <h1 className="text-4xl font-bold mb-6">Static Site Generation (SSG)</h1>
+            <div className="max-w-3xl mx-auto p-4 mt-16">
+                <h1 className="text-3xl font-semibold text-gray-800 mb-4 text-center">
+                    Welcome to the Dashboard
+                </h1>
+                <p className="text-black text-center mb-8">
+                    This is the dashboard page Using Server Side Rendering by `https://jsonplaceholder.typicode.com/posts`. <br /> You can view posts here.
+                </p>
 
-            {isLoggedIn ? (
-                <ul>
-                    {posts.map((post) => (
-                        <li key={post.id} className="border-b py-2">
-                            <h2 className="text-xl font-semibold">{post.title}</h2>
-                            <p className="text-gray-700">{post.body}</p>
-                        </li>
-                    ))}
-                </ul>
-            ) : (
-                <p className="text-red-600 mb-4">You are not logged in. Please log in to access more features.</p>
-            )}
+                {loading ? (
+                    <div className="flex justify-center items-center">
+                        <p className="text-gray-500">Loading posts...</p>
+                    </div>
+                ) : isLoggedIn ? (
+                    <div className="space-y-4">
+                        {posts.map((post) => (
+                            <div
+                                key={post.id}
+                                className="bg-white shadow-sm rounded-lg p-4 hover:shadow-md transition"
+                            >
+                                <h2 className="text-lg font-semibold text-gray-800">{post.title}</h2>
+                                <p className="text-gray-600">{post.body}</p>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-center">
+                        <p className="text-red-500 font-medium mb-4">
+                            You are not logged in. Please log in to view content.
+                        </p>
+                        <button
+                            className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600 transition"
+                            onClick={() => {router.push('/');}}
+                        >
+                            Log In
+                        </button>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }
